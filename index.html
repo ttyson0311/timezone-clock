@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS + CSS Clock</title>
+  </head>
+  <body>
+    <div id="buttons">
+      <div class="ny-button button">NY</div>
+      <div class="la-button button">LA</div>
+      <div class="tok-button button">Tokyo</div>
+      <div class="syd-button button">Sydney</div>
+    </div>
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hand hour-hand"></div>
+        <div class="hand min-hand"></div>
+        <div class="hand second-hand"></div>
+      </div>
+    </div>
+
+    <style>
+      html {
+        background: #018ded url(http://unsplash.it/1500/1000?image=881&blur=50);
+        background-size: cover;
+        font-family: "helvetica neue";
+        text-align: center;
+        font-size: 10px;
+      }
+      body {
+        margin: 0;
+        font-size: 2rem;
+        display: flex;
+        flex: 1;
+        min-height: 100vh;
+        align-items: center;
+      }
+      .clock {
+        width: 30rem;
+        height: 30rem;
+        border: 20px solid white;
+        border-radius: 50%;
+        margin: 50px auto;
+        position: relative;
+        padding: 2rem;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1), inset 0 0 0 3px #efefef,
+          inset 0 0 10px black, 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      .clock-face {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform: translateY(
+          -3px
+        ); /* account for the height of the clock hands */
+      }
+      .hand {
+        width: 50%;
+        height: 6px;
+        background: black;
+        position: absolute;
+        top: 50%;
+        transform-origin: 100%;
+        transform: rotate(90deg);
+
+        transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+      }
+
+      #buttons {
+        position: absolute;
+        bottom: 530px;
+        left: 400px;
+      }
+
+      .button {
+        margin-left: 20px;
+        border: none;
+        color: white;
+        height: 70px;
+        width: 100px;
+        text-align: center;
+        line-height: 60px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 20px;
+        border: 2px solid white;
+        cursor: pointer;
+      }
+
+      .numbers {
+        font-size: 24px;
+      }
+      /* #num12 {
+        position: absolute;
+        right: 50px;
+      }
+      #num1 {
+        position: absolute;
+      }
+      #num2 {
+        position: absolute;
+      }
+      #num3 {
+        position: absolute;
+      } */
+    </style>
+
+    <script>
+      const secondHand = document.querySelector(".second-hand");
+      const minuteHand = document.querySelector(".min-hand");
+      const hourHand = document.querySelector(".hour-hand");
+      const nyButton = document.querySelector(".ny-button");
+      const laButton = document.querySelector(".la-button");
+      const sydButton = document.querySelector(".syd-button");
+      const tokButton = document.querySelector(".tok-button");
+      const clockFace = document.querySelector(".clock-face");
+
+      // button.addEventListener("click", colorChange);
+      // function colorChange() {
+      //   document.body.style.background = "red";
+      // }
+
+      //original clock
+      nyButton.addEventListener("click", nyInterval);
+
+      function setDate() {
+        clearInterval(idLa);
+        clearInterval(idTokyo);
+        const now = new Date();
+        const seconds = now.getSeconds();
+        const secondsDegree = (seconds / 60) * 360 + 90;
+        secondHand.style.transform = `rotate(${secondsDegree}deg)`;
+
+        const minutes = now.getMinutes();
+        const minutesDegree = (minutes / 60) * 360 + 90;
+        minuteHand.style.transform = `rotate(${minutesDegree}deg)`;
+
+        const hour = now.getHours();
+        const hourDegree = (hour / 12) * 360 + 90;
+        hourHand.style.transform = `rotate(${hourDegree}deg)`;
+      }
+      function nyInterval() {
+        setInterval(setDate, 1000);
+      }
+
+      //getting id from setInterval (need this for clearing interval)
+      const idNy = setInterval(setDate, 1000);
+
+      laButton.addEventListener("click", laInterval);
+      function laZone() {
+        //have to clear intercal from previous function in order for this one to work
+        clearInterval(idNy);
+        clearInterval(idTokyo);
+
+        const laTime = new Date().toLocaleString("en-US", {
+          timeZone: "America/Los_Angeles"
+        });
+
+        const la = new Date(laTime);
+        const seconds = la.getSeconds();
+        const secondsDegree = (seconds / 60) * 360 + 90;
+        secondHand.style.transform = `rotate(${secondsDegree}deg)`;
+
+        const minutes = la.getMinutes();
+        const minutesDegree = (minutes / 60) * 360 + 90;
+        minuteHand.style.transform = `rotate(${minutesDegree}deg)`;
+
+        const hour = la.getHours();
+        const hourDegree = (hour / 12) * 360 + 90;
+        hourHand.style.transform = `rotate(${hourDegree}deg)`;
+      }
+      //placed in function so it wont automatically start when page starts (if not in function the last setInterval is what will work)
+      function laInterval() {
+        setInterval(laZone, 1000);
+      }
+
+      const idLa = setInterval(setDate, 1000);
+
+      // TOKYO TIME
+      tokButton.addEventListener("click", tokyoInterval);
+
+      function tokyoZone() {
+        clearInterval(idNy);
+        clearInterval(idLa);
+
+        const tokyoTime = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Tokyo"
+        });
+
+        const tokyo = new Date(tokyoTime);
+
+        const seconds = tokyo.getSeconds();
+        const secondsDegree = (seconds / 60) * 360 + 90;
+        secondHand.style.transform = `rotate(${secondsDegree}deg)`;
+
+        const minutes = tokyo.getMinutes();
+        const minutesDegree = (minutes / 60) * 360 + 90;
+        minuteHand.style.transform = `rotate(${minutesDegree}deg)`;
+
+        const hour = tokyo.getHours();
+        const hourDegree = (hour / 12) * 360 + 90;
+        hourHand.style.transform = `rotate(${hourDegree}deg)`;
+      }
+      function tokyoInterval() {
+        setInterval(tokyoZone, 1000);
+      }
+      const idTokyo = setInterval(setDate, 1000);
+
+      // //SYDNEY TIME
+      // sydButton.addEventListener("click", sydneyZone);
+      // clearInterval(idTokyo);
+
+      // function sydneyZone() {
+      //   const sydney = new Date().toLocaleString("en-US", {
+      //     timeZone: "Australia/Sydney"
+      //   });
+
+      //   const seconds = sydney.getSeconds();
+      //   const secondsDegree = (seconds / 60) * 360 + 90;
+      //   secondHand.style.transform = `rotate(${secondsDegree}deg)`;
+
+      //   const minutes = sydney.getMinutes();
+      //   const minutesDegree = (minutes / 60) * 360 + 90;
+      //   minuteHand.style.transform = `rotate(${minutesDegree}deg)`;
+
+      //   const hour = sydney.getHours();
+      //   const hourDegree = (hour / 12) * 360 + 90;
+      //   hourHand.style.transform = `rotate(${hourDegree}deg)`;
+      // }
+
+      // function sydneyinterval() {
+      //   setInterval(sydneyTime, 1000);
+      // }
+      // let idSydney = setInterval(setDate, 1000);
+
+      // setInterval(sydneyZone, 1000);
+
+      // function setDate() {
+      //   const now = new Date();
+      //   const seconds = now.getSeconds();
+      //   const secondsDegree = (seconds / 60) * 360 + 90;
+      //   secondHand.style.transform = `rotate(${secondsDegree}deg)`;
+
+      //   const minutes = now.getMinutes();
+      //   const minutesDegree = (minutes / 60) * 360 + 90;
+      //   minuteHand.style.transform = `rotate(${minutesDegree}deg)`;
+
+      //   const hour = now.getHours();
+      //   const hourDegree = (hour / 12) * 360 + 90;
+      //   hourHand.style.transform = `rotate(${hourDegree}deg)`;
+      // }
+      // setInterval(setDate, 1000);
+    </script>
+  </body>
+</html>
